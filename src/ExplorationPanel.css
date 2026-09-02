@@ -1,0 +1,538 @@
+/* =====================================================
+   EXPLORATION OVERLAY
+===================================================== */
+
+.exploration-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  padding: 40px 30px;
+  box-sizing: border-box;
+
+  background: rgba(0, 0, 0, 0.88);
+
+  z-index: 9999;
+
+  font-family: monospace;
+
+  overflow-y: auto;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.exploration-overlay::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* =====================================================
+   MAIN PANEL
+===================================================== */
+
+.exploration-panel {
+  position: relative;
+
+  width: min(1100px, 82vw);
+
+  max-height: calc(100vh - 80px);
+
+  padding: 20px;
+
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(
+      135deg,
+      #24170b,
+      #120c06 55%,
+      #1b1209
+    );
+
+  border: 2px solid #d49a32;
+
+  box-shadow:
+    0 0 0 4px #1b1108,
+    0 0 0 6px #9b6a20,
+    0 0 35px rgba(255, 190, 60, 0.3);
+
+  color: #f4ead7;
+
+  overflow-y: auto;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.exploration-panel::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* Inner decorative border */
+
+.exploration-panel::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 8px;
+
+  border: 1px solid rgba(255, 210, 100, 0.3);
+
+  pointer-events: none;
+}
+
+
+/* =====================================================
+   TOP BAR
+===================================================== */
+
+.exploration-top {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 20px;
+}
+
+
+.exploration-back,
+.exploration-close {
+  font-family: monospace;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  color: #f5e6c8;
+
+  background: #17100a;
+
+  border: 2px solid #9b6a20;
+
+  box-shadow:
+    0 0 0 2px #1b1108;
+
+  transition: 0.15s ease;
+}
+
+
+.exploration-back {
+  padding: 8px 14px;
+
+  font-size: 14px;
+}
+
+
+.exploration-close {
+  width: 40px;
+  height: 40px;
+
+  font-size: 25px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+}
+
+
+.exploration-back:hover,
+.exploration-close:hover {
+  background: #d49a32;
+
+  color: #17100a;
+
+  border-color: #ffd36a;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.exploration-header {
+  display: grid;
+
+  grid-template-columns: auto 1fr auto;
+
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 10px 10px 24px;
+
+  border-bottom: 1px solid rgba(212, 154, 50, 0.35);
+
+  margin-bottom: 24px;
+}
+
+
+.exploration-icon {
+  width: 62px;
+  height: 62px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  font-size: 34px;
+
+  background: #1c2816;
+
+  border: 2px solid #79a83b;
+
+  box-shadow:
+    inset 0 0 15px rgba(120, 170, 60, 0.15),
+    0 0 12px rgba(120, 170, 60, 0.15);
+}
+
+
+.exploration-header h1 {
+  margin: 0;
+
+  font-size: clamp(25px, 3vw, 40px);
+
+  letter-spacing: 3px;
+
+  color: #e9b94f;
+
+  text-shadow:
+    3px 3px 0 #251508;
+}
+
+
+.exploration-header p {
+  margin: 7px 0 0;
+
+  color: #aeb79c;
+
+  font-size: 14px;
+}
+
+
+.exploration-divider {
+  width: 100%;
+
+  max-width: 600px;
+
+  height: 3px;
+
+  margin-top: 12px;
+
+  background: #6f9735;
+
+  box-shadow:
+    0 0 8px rgba(111, 151, 53, 0.3);
+}
+
+
+.exploration-note {
+  text-align: right;
+
+  color: #79c8c4;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+
+  font-style: italic;
+
+  opacity: 0.85;
+}
+
+
+/* =====================================================
+   THREE COLUMN GRID
+===================================================== */
+
+.exploration-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 14px;
+
+  align-items: stretch;
+}
+
+
+/* =====================================================
+   CARDS
+===================================================== */
+
+.exploration-card {
+  position: relative;
+
+  display: flex;
+
+  flex-direction: column;
+
+  min-width: 0;
+
+  padding: 15px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(38, 27, 15, 0.96),
+      rgba(20, 14, 8, 0.98)
+    );
+
+  border: 1px solid #8c6426;
+
+  box-shadow:
+    inset 0 0 20px rgba(0, 0, 0, 0.3);
+
+  box-sizing: border-box;
+}
+
+
+.exploring-card {
+  border-top: 3px solid #79a83b;
+}
+
+
+.ideas-card {
+  border-top: 3px solid #d49a32;
+}
+
+
+.experiments-card {
+  border-top: 3px solid #4db8bd;
+}
+
+
+/* =====================================================
+   CARD HEADINGS
+===================================================== */
+
+.exploration-card-heading {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 12px;
+
+  margin-bottom: 18px;
+}
+
+
+.exploration-card-icon {
+  flex-shrink: 0;
+
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  font-size: 23px;
+
+  background: #181108;
+
+  border: 1px solid #9b6a20;
+}
+
+
+.exploration-card-heading h2 {
+  margin: 0;
+
+  font-size: 16px;
+
+  line-height: 1.25;
+
+  letter-spacing: 1px;
+
+  color: #e9b94f;
+}
+
+
+.exploration-card-heading p {
+  margin: 7px 0 0;
+
+  color: #918875;
+
+  font-size: 11px;
+
+  line-height: 1.5;
+}
+
+
+/* =====================================================
+   ITEMS
+===================================================== */
+
+.exploration-items {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+
+.exploration-item {
+  display: flex;
+
+  gap: 11px;
+
+  padding: 12px;
+
+  background: rgba(0, 0, 0, 0.24);
+
+  border-left: 2px solid #76551f;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+
+.exploration-item:hover {
+  transform: translateX(3px);
+
+  background: rgba(75, 184, 189, 0.06);
+
+  border-left-color: #4db8bd;
+}
+
+
+.exploration-item-icon {
+  flex-shrink: 0;
+
+  width: 25px;
+
+  font-size: 18px;
+
+  text-align: center;
+}
+
+
+.exploration-item h3 {
+  margin: 0 0 5px;
+
+  font-size: 13px;
+
+  color: #d9d1bd;
+
+  letter-spacing: 0.5px;
+}
+
+
+.exploration-item p {
+  margin: 0;
+
+  color: #817967;
+
+  font-size: 10px;
+
+  line-height: 1.55;
+}
+
+
+/* =====================================================
+   EXPERIMENT FOOTER
+===================================================== */
+
+.exploration-experiment-footer {
+  margin-top: auto;
+
+  padding-top: 17px;
+
+  text-align: center;
+
+  color: #8bc9c8;
+
+  font-size: 11px;
+
+  letter-spacing: 1px;
+}
+
+
+/* =====================================================
+   QUOTE
+===================================================== */
+
+.exploration-quote {
+  margin-top: 24px;
+
+  padding: 18px 25px;
+
+  text-align: center;
+
+  color: #a89d88;
+
+  font-size: 13px;
+
+  line-height: 1.6;
+
+  border-top: 1px solid rgba(212, 154, 50, 0.25);
+}
+
+
+.exploration-quote span {
+  color: #d49a32;
+
+  font-size: 24px;
+
+  vertical-align: middle;
+
+  margin: 0 5px;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 1050px) {
+
+  .exploration-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .exploration-panel {
+    width: min(850px, 94vw);
+  }
+
+}
+
+
+@media (max-width: 650px) {
+
+  .exploration-overlay {
+    padding: 15px;
+  }
+
+  .exploration-panel {
+    padding: 18px;
+  }
+
+  .exploration-header {
+    grid-template-columns: auto 1fr;
+  }
+
+  .exploration-note {
+    display: none;
+  }
+
+  .exploration-header h1 {
+    font-size: 24px;
+  }
+
+}

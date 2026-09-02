@@ -1,0 +1,11 @@
+Model Information:
+* title:	Waterfall in Hanok
+* source:	https://sketchfab.com/3d-models/waterfall-in-hanok-66855b94b436487b9375cc66d884c327
+* author:	Minecraft Build (https://sketchfab.com/Minecraft_Build)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Waterfall in Hanok" (https://sketchfab.com/3d-models/waterfall-in-hanok-66855b94b436487b9375cc66d884c327) by Minecraft Build (https://sketchfab.com/Minecraft_Build) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

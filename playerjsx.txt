@@ -1,0 +1,452 @@
+import { useEffect, useRef } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
+import * as THREE from "three";
+
+function Player({
+  insideAbout,
+  setInsideAbout,
+}) {
+  const playerRef = useRef();
+  const nearbySection = useRef(null);
+
+  const { camera, gl } = useThree();
+
+  const keys = useRef({
+    w: false,
+    a: false,
+    s: false,
+    d: false,
+  });
+
+  // =================================
+  // CHARACTER / CAMERA DIRECTION
+  // =================================
+
+  const yaw = useRef(0);
+  const pitch = useRef(0.3);
+
+  // Mouse / touchpad dragging
+  const rotatingCamera = useRef(false);
+
+  // =================================
+  // KEYBOARD
+  // =================================
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      const key = event.key.toLowerCase();
+
+      // Movement
+      if (key === "w") keys.current.w = true;
+      if (key === "a") keys.current.a = true;
+      if (key === "s") keys.current.s = true;
+      if (key === "d") keys.current.d = true;
+
+      // =================================
+      // ENTER / EXIT
+      // =================================
+
+      if (key === "e") {
+        // ENTER ABOUT
+        if (!insideAbout && nearbySection.current === "about") {
+          setInsideAbout(true);
+
+          // Put player inside About
+          playerRef.current.position.set(0, 1, 3);
+
+          // Face toward the interior
+          yaw.current = Math.PI;
+          playerRef.current.rotation.y = Math.PI;
+        }
+
+        // EXIT ABOUT
+        else if (insideAbout) {
+          setInsideAbout(false);
+
+          // Put player outside About
+          playerRef.current.position.set(0, 1, -13);
+
+          // Reset direction
+          yaw.current = 0;
+          playerRef.current.rotation.y = 0;
+        }
+      }
+    };
+
+    const handleKeyUp = (event) => {
+      const key = event.key.toLowerCase();
+
+      if (key === "w") keys.current.w = false;
+      if (key === "a") keys.current.a = false;
+      if (key === "s") keys.current.s = false;
+      if (key === "d") keys.current.d = false;
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [insideAbout, setInsideAbout]);
+
+  // =================================
+  // MOUSE / TOUCHPAD CAMERA CONTROL
+  // =================================
+
+  useEffect(() => {
+    const canvas = gl.domElement;
+
+    const handlePointerDown = (event) => {
+      // Left click / touchpad click
+      rotatingCamera.current = true;
+
+      canvas.setPointerCapture?.(event.pointerId);
+    };
+
+    const handlePointerUp = (event) => {
+      rotatingCamera.current = false;
+
+      canvas.releasePointerCapture?.(event.pointerId);
+    };
+
+    const handlePointerMove = (event) => {
+      if (!rotatingCamera.current) return;
+
+      const sensitivity = 0.006;
+
+      // Horizontal rotation
+      yaw.current -= event.movementX * sensitivity;
+
+      // Vertical camera angle
+      pitch.current -= event.movementY * sensitivity;
+
+      pitch.current = THREE.MathUtils.clamp(
+        pitch.current,
+        -0.2,
+        1.0
+      );
+    };
+
+    const handleContextMenu = (event) => {
+      event.preventDefault();
+    };
+
+    canvas.addEventListener(
+      "pointerdown",
+      handlePointerDown
+    );
+
+    canvas.addEventListener(
+      "pointerup",
+      handlePointerUp
+    );
+
+    canvas.addEventListener(
+      "pointermove",
+      handlePointerMove
+    );
+
+    canvas.addEventListener(
+      "contextmenu",
+      handleContextMenu
+    );
+
+    return () => {
+      canvas.removeEventListener(
+        "pointerdown",
+        handlePointerDown
+      );
+
+      canvas.removeEventListener(
+        "pointerup",
+        handlePointerUp
+      );
+
+      canvas.removeEventListener(
+        "pointermove",
+        handlePointerMove
+      );
+
+      canvas.removeEventListener(
+        "contextmenu",
+        handleContextMenu
+      );
+    };
+  }, [gl]);
+
+  // =================================
+  // GAME LOOP
+  // =================================
+
+  useFrame((state, delta) => {
+    if (!playerRef.current) return;
+
+    const player = playerRef.current;
+
+    const speed = 5;
+
+    // =================================
+    // INTERACTION DETECTION
+    // =================================
+
+    if (!insideAbout) {
+      const aboutPosition = new THREE.Vector3(
+        0,
+        0,
+        -18
+      );
+
+      const playerPosition = new THREE.Vector3(
+        player.position.x,
+        0,
+        player.position.z
+      );
+
+      const distanceToAbout =
+        playerPosition.distanceTo(aboutPosition);
+
+      if (distanceToAbout < 5) {
+        nearbySection.current = "about";
+      } else {
+        nearbySection.current = null;
+      }
+    } else {
+      nearbySection.current = null;
+    }
+
+    // =================================
+    // CHARACTER FACING
+    // =================================
+
+    player.rotation.y = yaw.current;
+
+    // =================================
+    // FORWARD DIRECTION
+    // =================================
+
+    const forward = new THREE.Vector3(
+      Math.sin(yaw.current),
+      0,
+      Math.cos(yaw.current)
+    );
+
+    // =================================
+    // RIGHT DIRECTION
+    // =================================
+
+    const right = new THREE.Vector3(
+      Math.cos(yaw.current),
+      0,
+      -Math.sin(yaw.current)
+    );
+
+    // =================================
+    // MOVEMENT
+    // =================================
+
+    const movement = new THREE.Vector3();
+
+    // W = character's forward
+    if (keys.current.w) {
+      movement.add(forward);
+    }
+
+    // S = character's backward
+    if (keys.current.s) {
+      movement.sub(forward);
+    }
+
+    // A = character's left
+    if (keys.current.a) {
+      movement.sub(right);
+    }
+
+    // D = character's right
+    if (keys.current.d) {
+      movement.add(right);
+    }
+
+    // =================================
+    // APPLY MOVEMENT
+    // =================================
+
+    if (movement.lengthSq() > 0) {
+      movement.normalize();
+
+      player.position.x +=
+        movement.x * speed * delta;
+
+      player.position.z +=
+        movement.z * speed * delta;
+    }
+
+    // =================================
+    // THIRD PERSON CAMERA
+    // =================================
+
+    const distance = 7;
+
+    const horizontalDistance =
+      Math.cos(pitch.current) * distance;
+
+    const verticalDistance =
+      Math.sin(pitch.current) * distance;
+
+    // Camera stays BEHIND character
+    const cameraX =
+      player.position.x -
+      Math.sin(yaw.current) *
+        horizontalDistance;
+
+    const cameraZ =
+      player.position.z -
+      Math.cos(yaw.current) *
+        horizontalDistance;
+
+    const cameraY =
+      player.position.y +
+      2 +
+      verticalDistance;
+
+    const targetCameraPosition =
+      new THREE.Vector3(
+        cameraX,
+        cameraY,
+        cameraZ
+      );
+
+    // Smooth camera follow
+    camera.position.lerp(
+      targetCameraPosition,
+      1 - Math.pow(0.001, delta)
+    );
+
+    // =================================
+    // CAMERA LOOK AT PLAYER
+    // =================================
+
+    const lookTarget =
+      new THREE.Vector3(
+        player.position.x,
+        player.position.y + 1,
+        player.position.z
+      );
+
+    camera.lookAt(lookTarget);
+  });
+
+  // =================================
+  // CHARACTER
+  // =================================
+
+  return (
+    <group
+  ref={playerRef}
+  position={[0, 2, 7]}
+  scale={0.5}
+>
+
+      {/* HEAD */}
+      <mesh
+        position={[0, 1.7, 0]}
+        castShadow
+      >
+        <boxGeometry
+          args={[0.8, 0.8, 0.8]}
+        />
+
+        <meshStandardMaterial
+          color="#d69b72"
+        />
+      </mesh>
+
+      {/* FACE */}
+      <mesh
+        position={[0, 1.75, 0.41]}
+      >
+        <boxGeometry
+          args={[0.45, 0.25, 0.05]}
+        />
+
+        <meshStandardMaterial
+          color="#222222"
+        />
+      </mesh>
+
+      {/* BODY */}
+      <mesh
+        position={[0, 0.7, 0]}
+        castShadow
+      >
+        <boxGeometry
+          args={[0.9, 1.2, 0.5]}
+        />
+
+        <meshStandardMaterial
+          color="#3155a4"
+        />
+      </mesh>
+
+      {/* LEFT ARM */}
+      <mesh
+        position={[-0.65, 0.7, 0]}
+        castShadow
+      >
+        <boxGeometry
+          args={[0.3, 1.1, 0.4]}
+        />
+
+        <meshStandardMaterial
+          color="#d69b72"
+        />
+      </mesh>
+
+      {/* RIGHT ARM */}
+      <mesh
+        position={[0.65, 0.7, 0]}
+        castShadow
+      >
+        <boxGeometry
+          args={[0.3, 1.1, 0.4]}
+        />
+
+        <meshStandardMaterial
+          color="#d69b72"
+        />
+      </mesh>
+
+      {/* LEFT LEG */}
+      <mesh
+        position={[-0.25, -0.45, 0]}
+        castShadow
+      >
+        <boxGeometry
+          args={[0.35, 1.1, 0.45]}
+        />
+
+        <meshStandardMaterial
+          color="#242424"
+        />
+      </mesh>
+
+      {/* RIGHT LEG */}
+      <mesh
+        position={[0.25, -0.45, 0]}
+        castShadow
+      >
+        <boxGeometry
+          args={[0.35, 1.1, 0.45]}
+        />
+
+        <meshStandardMaterial
+          color="#242424"
+        />
+      </mesh>
+
+    </group>
+  );
+}
+
+export default Player;

@@ -1,0 +1,310 @@
+Yes. Now that **Building 1 → bridge → Building 2** is mapped, the next step is to make the player actually use that path.
+
+The cleanest approach is:
+
+1. Player **always starts at `START`**.
+2. `PathSystem.jsx` becomes the single source of truth for the walkable areas.
+3. Player can move **only if the new position is inside one of the path boxes**.
+4. Later we can hide the pink boxes.
+5. We don't need to use the huge map's physics for movement, which should also reduce the hanging you were seeing.
+
+### 1. First change `PathSystem.jsx`
+
+Make the path data exportable:
+
+```jsx
+import { useMemo } from "react";
+
+export const PATH_POINTS = [
+  // BUILDING 1
+  {
+    name: "START",
+    position: [4.15, 4.58, 17],
+    size: [2, 0.2, 2],
+  },
+
+  {
+    name: "P2",
+    position: [2.65, 4.58, 17],
+    size: [1, 0.2, 1],
+  },
+
+  {
+    name: "P3",
+    position: [2.5, 4.58, 15.9],
+    size: [0.7, 0.2, 1.2],
+  },
+
+  {
+    name: "P4",
+    position: [2, 4.58, 15.7],
+    size: [0.3, 0.2, 0.7],
+  },
+
+  // BRIDGE
+  {
+    name: "P5",
+    position: [1.76, 4.6, 15.5],
+    size: [8, 0.2, 0.5],
+  },
+
+  {
+    name: "P6",
+    position: [0.5, 4.65, 15.5],
+    size: [2.73, 0.2, 0.5],
+  },
+
+  {
+    name: "P7",
+    position: [0.8, 4.69, 15.5],
+    size: [1.6, 0.2, 0.5],
+  },
+
+  {
+    name: "P8",
+    position: [0.9, 4.74, 15.5],
+    size: [1.5, 0.2, 0.5],
+  },
+
+  // BUILDING 2
+  {
+    name: "START2",
+    position: [-2.5, 4.59, 15.5],
+    size: [2, 0.2, 2],
+  },
+];
+
+function PathSystem() {
+  const markers = useMemo(() => PATH_POINTS, []);
+
+  return (
+    <group>
+      {markers.map((marker) => (
+        <mesh
+          key={marker.name}
+          position={marker.position}
+        >
+          <boxGeometry args={marker.size} />
+
+          <meshBasicMaterial
+            color="#ff3333"
+            transparent
+            opacity={0.35}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+export default PathSystem;
+```
+
+The important part is:
+
+```jsx
+export const PATH_POINTS = [...]
+```
+
+Now `Player.jsx` can use the exact same coordinates.
+
+---
+
+# 2. Change `Player.jsx`
+
+You don't need to rewrite the entire character.
+
+### Add this import at the top:
+
+```jsx
+import { PATH_POINTS } from "./PathSystem";
+```
+
+So the top becomes:
+
+```jsx
+import { useEffect, useRef } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
+import * as THREE from "three";
+import { RigidBody, CapsuleCollider } from "@react-three/rapier";
+import { PATH_POINTS } from "./PathSystem";
+```
+
+---
+
+## 3. Add this function inside `Player()`
+
+Put it after your `yaw`, `pitch`, etc.:
+
+```jsx
+const isInsidePath = (x, z) => {
+  for (const path of PATH_POINTS) {
+    const [px, , pz] = path.position;
+    const [sx, , sz] = path.size;
+
+    const minX = px - sx / 2;
+    const maxX = px + sx / 2;
+
+    const minZ = pz - sz / 2;
+    const maxZ = pz + sz / 2;
+
+    if (
+      x >= minX &&
+      x <= maxX &&
+      z >= minZ &&
+      z <= maxZ
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+};
+```
+
+This basically asks:
+
+> "Is the player currently inside any of our pink path boxes?"
+
+---
+
+# 4. Change your movement section
+
+You currently have:
+
+```jsx
+body.setNextKinematicTranslation({
+  x: newX,
+  y: currentPosition.y,
+  z: newZ,
+});
+```
+
+Replace that entire movement application with:
+
+```jsx
+if (isInsidePath(newX, newZ)) {
+  body.setNextKinematicTranslation({
+    x: newX,
+    y: currentPosition.y,
+    z: newZ,
+  });
+}
+```
+
+So the movement section becomes:
+
+```jsx
+if (movement.lengthSq() > 0) {
+  movement.normalize();
+
+  const newX =
+    currentPosition.x +
+    movement.x * speed * delta;
+
+  const newZ =
+    currentPosition.z +
+    movement.z * speed * delta;
+
+  // =========================================
+  // PATH RESTRICTION
+  // =========================================
+
+  if (isInsidePath(newX, newZ)) {
+    body.setNextKinematicTranslation({
+      x: newX,
+      y: currentPosition.y,
+      z: newZ,
+    });
+  }
+}
+```
+
+---
+
+# 5. Most important: change the starting position
+
+Your player currently has something like:
+
+```jsx
+position={[0, 2, 7]}
+```
+
+Change it to:
+
+```jsx
+position={[4.15, 4.58, 17]}
+```
+
+So:
+
+```jsx
+<RigidBody
+  ref={bodyRef}
+  type="kinematicPosition"
+  colliders={false}
+  position={[4.15, 4.58, 17]}
+  enabledRotations={[false, false, false]}
+>
+```
+
+Now the character should spawn **directly on your START box**.
+
+---
+
+## One important thing
+
+Your pink boxes currently have:
+
+```jsx
+size: [2, 0.2, 2]
+```
+
+The `0.2` is only their **height**.
+
+For our movement system, we're effectively using:
+
+```text
+        Z
+        ↑
+
+   ┌─────────┐
+   │  START  │
+   └────┬────┘
+        │
+       P2
+        │
+       P3
+        │
+       P4
+        │
+══════════════════
+      BRIDGE
+══════════════════
+        │
+     BUILDING 2
+```
+
+The player won't care about the vertical thickness of the pink box. It only uses the **X/Z footprint**.
+
+---
+
+### Then test exactly this
+
+Start the game.
+
+You should:
+
+* Spawn at the **START pink box**.
+* `W/A/S/D` works.
+* Walk around Building 1.
+* Reach P2 → P3 → P4.
+* Walk onto the bridge.
+* Walk across the bridge.
+* Reach Building 2.
+* Try walking off the pink path → **player stops**.
+* No invisible giant wall around the entire map.
+
+**Don't hide the pink boxes yet.** They're our debugging tool. Once we have the entire route from Building 1 → Building 2 → Building 3 → etc., we'll set their opacity to `0` and the player will appear to freely walk through the environment while actually following our designed route.
+
+And this is much better than trying to make the entire 2-million-triangle map physically collide with the player.

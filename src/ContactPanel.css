@@ -1,0 +1,442 @@
+/* =====================================================
+   CONTACT OVERLAY
+===================================================== */
+
+.contact-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: rgba(0, 0, 0, 0.72);
+
+  z-index: 2000;
+
+  padding: 30px;
+
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   MAIN PANEL
+===================================================== */
+
+.contact-panel {
+  width: min(900px, 95vw);
+
+  max-height: 90vh;
+
+  background: #160d08;
+
+  border: 2px solid #b88624;
+
+  box-shadow:
+    0 0 0 3px #090604,
+    0 15px 40px rgba(0, 0, 0, 0.65);
+
+  color: #eeeeee;
+
+  display: flex;
+
+  flex-direction: column;
+
+  overflow: hidden;
+
+  font-family:
+    "Courier New",
+    monospace;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.contact-header {
+  height: 64px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  position: relative;
+
+  background:
+    linear-gradient(
+      rgba(38, 21, 11, 0.96),
+      rgba(24, 13, 7, 0.96)
+    );
+
+  border-bottom: 2px solid #8d641d;
+}
+
+
+.contact-title {
+  font-size: 24px;
+
+  font-weight: bold;
+
+  letter-spacing: 2px;
+
+  color: #ffd45a;
+
+  text-shadow:
+    2px 2px 0 #111;
+}
+
+
+.contact-close {
+  position: absolute;
+
+  right: 14px;
+
+  top: 12px;
+
+  width: 38px;
+
+  height: 38px;
+
+  border: 2px solid #b88624;
+
+  background: #21130a;
+
+  color: white;
+
+  font-size: 25px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  line-height: 28px;
+
+  box-shadow:
+    inset 0 -3px 0 rgba(0, 0, 0, 0.35);
+}
+
+
+.contact-close:hover {
+  background: #5b3c12;
+
+  color: #ffd45a;
+
+  transform: translateY(-1px);
+}
+
+
+.contact-close:active {
+  transform: translateY(2px);
+
+  box-shadow: none;
+}
+
+
+/* =====================================================
+   MAIN CONTENT
+===================================================== */
+
+.contact-main {
+  padding: 20px;
+
+  overflow-y: auto;
+
+  /* Keep scrolling but hide scrollbar */
+  scrollbar-width: none;
+
+  -ms-overflow-style: none;
+}
+
+
+.contact-main::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* =====================================================
+   COMMON GAME BOX
+===================================================== */
+
+.contact-panel .game-box {
+  background: #1b1009;
+
+  border: 2px solid #9d7122;
+
+  box-shadow:
+    inset 0 0 0 1px #3b260f;
+
+  box-sizing: border-box;
+}
+
+
+.contact-panel .game-box-title {
+  padding: 10px 14px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #334014,
+      #21170c
+    );
+
+  border-bottom: 2px solid #8d641d;
+
+  font-size: 15px;
+
+  font-weight: bold;
+
+  letter-spacing: 1px;
+
+  color: #ffffff;
+}
+
+
+/* =====================================================
+   INTRO
+===================================================== */
+
+.contact-intro-box {
+  margin-bottom: 18px;
+}
+
+
+.contact-intro-content {
+  display: flex;
+
+  align-items: center;
+
+  gap: 22px;
+
+  padding: 22px;
+}
+
+
+.contact-intro-icon {
+  width: 70px;
+
+  height: 70px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: #24150b;
+
+  border: 2px solid #75551b;
+
+  font-size: 34px;
+
+  box-shadow:
+    inset 0 -5px 0 rgba(0, 0, 0, 0.25);
+}
+
+
+.contact-intro-content h2 {
+  margin: 0 0 8px;
+
+  font-size: 20px;
+
+  letter-spacing: 1px;
+
+  color: #eeeeee;
+}
+
+
+.contact-intro-content p {
+  margin: 0;
+
+  color: #cfc2b4;
+
+  line-height: 1.6;
+
+  font-size: 14px;
+}
+
+
+/* =====================================================
+   CONTACT GRID
+===================================================== */
+
+.contact-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 18px;
+}
+
+
+/* =====================================================
+   CONTACT CARD
+===================================================== */
+
+.contact-card {
+  min-height: 190px;
+}
+
+
+.contact-card-content {
+  min-height: 135px;
+
+  padding: 18px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  text-align: center;
+}
+
+
+.contact-icon {
+  font-size: 27px;
+
+  width: 48px;
+
+  height: 48px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: #24150b;
+
+  border: 2px solid #694b17;
+
+  box-sizing: border-box;
+}
+
+
+.contact-value {
+  color: #d8cec2;
+
+  font-size: 14px;
+
+  min-height: 18px;
+}
+
+
+/* =====================================================
+   OPEN BUTTON
+===================================================== */
+
+.contact-button {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-width: 90px;
+
+  padding: 7px 16px;
+
+  background: #4b4947;
+
+  border: 2px solid #111;
+
+  color: white;
+
+  text-decoration: none;
+
+  font-family: "Courier New", monospace;
+
+  font-size: 13px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  box-shadow:
+    inset 0 -4px 0 rgba(0, 0, 0, 0.3);
+}
+
+
+.contact-button:hover {
+  background: #76551c;
+
+  color: #ffd45a;
+
+  transform: translateY(-1px);
+}
+
+
+.contact-button:active {
+  transform: translateY(2px);
+
+  box-shadow: none;
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.contact-footer {
+  padding: 14px;
+
+  text-align: center;
+
+  background:
+    linear-gradient(
+      rgba(38, 21, 11, 0.96),
+      rgba(24, 13, 7, 0.96)
+    );
+
+  border-top: 2px solid #8d641d;
+
+  color: #c9a84e;
+
+  font-size: 12px;
+
+  letter-spacing: 1px;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 650px) {
+
+  .contact-overlay {
+    padding: 12px;
+  }
+
+  .contact-panel {
+    width: 100%;
+
+    max-height: 94vh;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-intro-content {
+    align-items: flex-start;
+  }
+
+  .contact-title {
+    font-size: 19px;
+  }
+}
