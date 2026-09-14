@@ -1,5 +1,7 @@
 import { useGLTF } from "@react-three/drei";
 
+
+
 function WaterfallMap() {
   const { scene } = useGLTF(
     "/assets/waterfall/scene.gltf"
